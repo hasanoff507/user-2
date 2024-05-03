@@ -1,13 +1,13 @@
 import React from "react";
 import { Modal, Form, Input, Button } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 type Props = {
   isModalOpen: boolean;
   handleCancel: () => void;
-  onModalCreateFinish: any;
   onModalFeild: any;
-  setNewsTitle: React.Dispatch<React.SetStateAction<string>>
-  setNewsDesc: React.Dispatch<React.SetStateAction<string>>
+  fetchData: () => void
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 };
 type FieldType = {
   newsTitle?: string;
@@ -16,21 +16,37 @@ type FieldType = {
 const ModalCreate: React.FC<Props> = ({
   isModalOpen,
   handleCancel,
-  onModalCreateFinish,
+  fetchData,
   onModalFeild,
-  setNewsTitle,
-  setNewsDesc
+  setIsModalOpen
+  
 }) => {
-
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewsTitle(event.target.value);
-  };
+  const url = "http://10.0.53.146:9027";
+  const [form] = Form.useForm();
 
 
-  const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewsDesc(event.target.value);
-  };
 
+  const handleSubmit = (data:any) => {
+    console.log(data)
+    const dataCreate = {
+      title: data.newsTitle,
+      description: data.newsDesc,
+    };
+    fetch(`${url}/api/NewsLine`, {
+      method: "POST",
+      body: JSON.stringify(dataCreate),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setIsModalOpen(false);
+        form.resetFields();
+        fetchData(); 
+      })
+      .catch((error) => console.error("Failed to create news:", error));
+  }
   return (
     <Modal
       title="Yangilik Kiriting !"
@@ -39,24 +55,25 @@ const ModalCreate: React.FC<Props> = ({
     >
       <Form
         name="basic"
+        form={form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
-        onFinish={onModalCreateFinish}
+        onFinish={handleSubmit}
         onFinishFailed={onModalFeild}
         autoComplete="off"
       >
-        <Form.Item<FieldType>
+        <Form.Item
           label="Yangilik Mavzusi"
           name="newsTitle"
           rules={[{ required: true, message: "Yangilik mavzusini kiriting!" }]}
         >
-            <Input onChange={handleTitleChange} />
+          <TextArea  rows={4} />
         </Form.Item>
 
-        <Form.Item<FieldType> label="Yangilik Tavsifi" name="newsDesc">
-        <Input onChange={handleDescChange} />
+        <Form.Item label="Yangilik Tavsifi" name="newsDesc">
+          <TextArea rows={4} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button onClick={handleCancel}>Yopish</Button>

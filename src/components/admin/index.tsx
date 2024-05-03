@@ -4,10 +4,12 @@ import {
   MenuUnfoldOutlined,
   CheckCircleOutlined,
   PlusOutlined,
+  LeftCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Modal } from "antd";
 import CardItem from "./card";
 import ModalCreate from "./modalCreate";
+import { useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 interface DataType {
     id: number,
@@ -18,14 +20,13 @@ interface DataType {
     active: boolean
 }
 const Admin: React.FC = () => {
-  const url = "http://localhost:9027";
+  const url = "http://10.0.53.146:9027";
   const [collapsed, setCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newsTitle, setNewsTitle] = useState("");
-  const [newsDesc, setNewsDesc] = useState("");
   const [cardData, setCardData] = useState<DataType[]>([]);
   const [isActive, setIsActive] = useState(true);
 
+const navigate = useNavigate()
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -48,32 +49,15 @@ const Admin: React.FC = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setNewsTitle(""); // Clear fields on cancel
-    setNewsDesc("");
+    
   };
+  
 
-  const onModalCreateFinish = () => {
-    const dataCreate = {
-      title: newsTitle,
-      description: newsDesc,
-    };
-    fetch(`${url}/api/NewsLine`, {
-      method: "POST",
-      body: JSON.stringify(dataCreate),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setIsModalOpen(false);
-        setNewsTitle(""); // Clear fields on success
-        setNewsDesc("");
-        fetchData(); // Re-fetch data to reflect changes
-      })
-      .catch((error) => console.error("Failed to create news:", error));
-  };
 
+
+  const backClick = ()=>{
+    navigate('/')
+  }
   const handleMenuClick = (e:any) => {
     setIsActive(e.key === "1");
   };
@@ -86,23 +70,27 @@ const Admin: React.FC = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
-          style={{ background: "#ffffff" }}
+          style={{ background: "#ffffff", position:'relative' }}
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={[
             {
               key: "1",
               icon: <CheckCircleOutlined style={{ color: "green" }} />,
-              label: "Active",
+              label: "Faol",
             },
             {
               key: "2",
               icon: <CheckCircleOutlined />,
-              label: "Inctive",
+              label: "Faol emas",
             },
           ]}
           onClick={handleMenuClick}
         />
+        <div>
+
+        <Button onClick={backClick} style={{position:'absolute', bottom:'10px', left:'10px', border:'none', background:'transparent'}} icon={<LeftCircleOutlined style={{fontSize:'20px'}}/>}/>
+        </div>
       </Sider>
       <Layout>
         <Header
@@ -131,9 +119,8 @@ const Admin: React.FC = () => {
             onModalFeild={onModalFeild}
             isModalOpen={isModalOpen}
             handleCancel={handleCancel}
-            onModalCreateFinish={onModalCreateFinish}
-            setNewsTitle={setNewsTitle}
-            setNewsDesc={setNewsDesc}
+            fetchData={fetchData}
+            setIsModalOpen={setIsModalOpen}
           />
         </Header>
         <Content
@@ -148,7 +135,7 @@ const Admin: React.FC = () => {
           }}
         >
           {cardData.length > 0 ? (
-            <CardItem cardData={cardData}/>) : (
+            <CardItem fetchData={fetchData} cardData={cardData} isActive={isActive} />) : (
             <div>
               {isActive
                 ? "No active content available."

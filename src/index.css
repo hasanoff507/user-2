@@ -5,8 +5,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+  background: red;
 
+
+}
+body::-webkit-scrollbar {
+  display: none;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -32,4 +37,47 @@ html, body, #root {
 }
 .ant-row{
   margin-bottom: 10px;
+}
+.ant-card-body{
+  position: relative;
+}
+.cards .ant-card-body{
+padding-left: 5px;
+padding-right: 5px;
+padding-top: 5px;
+padding-bottom: 0;
+}
+.cards .ant-card-head{
+  padding: 0 10px;
+  min-height: 32px !important;
+
+}
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(-100% + 360px)); /* Adjust 360px based on your content height */
+  }
+}
+
+.ticker {
+  /* animation: scrollUp 75s linear infinite; */
+}
+
+.ticker:hover {
+  animation-play-state: paused; /* Pause animation on hover */
+}
+
+
+
+
+.card-animation {
+  animation: slideUp 0.5s ease-out forwards;
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(3px);
+
+}
+.ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.2) !important;
 }

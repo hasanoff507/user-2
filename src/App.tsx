@@ -11,6 +11,7 @@ function App() {
      <Router>
         <Routes>
           <Route path="/" element={<Users />} />
+          {/* <Route path="*" element={<Users />} /> */}
           <Route path="/admin" element={<Admin />} />
         </Routes>
     </Router>

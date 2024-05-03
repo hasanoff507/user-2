@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 
-
+interface DataType {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: boolean;
+  active: boolean;
+}
 type Props = {
   onMoreModalClick: boolean;
   onMoreModalClose: any;
   moreData: any;
 };
 
-const ModalMore: React.FC<Props> = ({
+const ModalMoreUser: React.FC<Props> = ({
   onMoreModalClick,
   onMoreModalClose,
   moreData,
@@ -17,12 +24,12 @@ const ModalMore: React.FC<Props> = ({
     
   return (
     <Modal
-    title={moreData?.map((item:any) => (<span key={item.id}>{item.title}</span>))}
+    title={moreData.map((item:any) => (<span key={item.id}>{item.title}</span>))}
       open={onMoreModalClick}
       onCancel={onMoreModalClose}
     >
      <div>
-         {moreData?.map((item:any)=>{
+         {moreData.map((item:any)=>{
             return(
                 <div key={item.id}>
                     {item.description}
@@ -31,8 +38,8 @@ const ModalMore: React.FC<Props> = ({
         })}
     </div>
     </Modal>
-   
+  
   );
 };
 
-export default ModalMore;
+export default ModalMoreUser;
