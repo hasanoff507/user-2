@@ -38,6 +38,7 @@ const User: React.FC = () => {
   const [onMoreModalClick, setOnMoreModalClick] = useState(false);
   const [moreData, setMoreData] = useState<DataType[]>([]);
   const [showAdminButton, setShowAdminButton] = useState(true);
+  const [isActiveToggled, setIsActiveToggled] = useState(false);
   const [language, setLanguage] = useState("uz");
   const translations: Translations = {
     uz: "Е'лонлар",
@@ -62,6 +63,7 @@ const User: React.FC = () => {
       });
   }, []);
   const toggleActive = () => {
+    setIsActiveToggled(!isActiveToggled); 
     setLoading(true);
     fetch(`${url}/api/NewsLine`)
       .then((response) => response.json())
@@ -268,14 +270,13 @@ const User: React.FC = () => {
                 <SplideSlide key={item.id}>
                   <Card
                     key={`card-${item.id}-${item.active}`}
-                    className={`cards card-animation ${item.active ? 'active-card' : 'inactive-card'}`}
-                    style={{
-                      // background: `${item.active ? 'rgba(220, 255, 226, 0,2) ' : 'rgba(255, 199, 199, 0,2)'} !important`,
-                      background: `${item.active ? 'rgba(220, 255, 226, 0.2)' : 'rgba(255, 199, 199, 0.2)'} !important`,
+                    className={`cards card-animation ${isActiveToggled ? (item.active ? 'active-card' : 'inactive-card') : ''}`}
 
+                    style={{
                       position: "relative",
                       padding: "0px !important",
-                      marginBottom:'10px'
+                      marginBottom:'10px',
+                      background:'rgba(255, 255, 255, 0.5)'
                     }}
                     title={truncateTitle(item.title, 30)}
                     bordered={false}
