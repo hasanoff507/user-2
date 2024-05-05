@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Button, FormInstance } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import url from "../../../url";
 
 type Props = {
   onPutModalClose: () => void;
@@ -22,7 +23,6 @@ const ModalPut: React.FC<Props> = ({
   fetchData,
   setPutModalOpen
 }) => {
-  const url = "http://10.0.53.146:9027";
   const [form] = Form.useForm<FieldType>();
   const [putData, setPutData] = useState<FieldType | null>(null);
 

@@ -6,11 +6,11 @@ import {
 } from "@ant-design/icons";
 import { Layout, Button, Row, Col, Card, Modal, Spin } from "antd";
 import { useLocation } from "react-router-dom";
-import { Splide } from "@splidejs/splide";
-import { SplideSlide, Splide as SplideReact } from "@splidejs/react-splide";
 import { AutoScroll } from "@splidejs/splide-extension-auto-scroll";
 import ModalMoreUser from "./modalMoreUser";
-
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import { Options as SplideOptions } from "@splidejs/splide";
+import url from "../../url";
 const { Header, Content } = Layout;
 
 interface DataType {
@@ -32,11 +32,9 @@ interface Translations {
 const admins = ["grci1", "grci2", "matrixbi"];
 
 const User: React.FC = () => {
-  const url = "http://localhost:9027";
   const location = useLocation();
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [onMoreModalClick, setOnMoreModalClick] = useState(false);
   const [moreData, setMoreData] = useState<DataType[]>([]);
   const [showAdminButton, setShowAdminButton] = useState(true);
@@ -46,26 +44,42 @@ const User: React.FC = () => {
     ru: "Объявления",
   };
 
-  // new Splide(".splide").mount({ AutoScroll });
-
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => {
-      fetch(`${url}/api/NewsLine`)
-        .then((response) => response.json())
-        .then((json) => {
-          setData(json);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-          setLoading(false);
-        });
-    }, 5000);
-
-    // return () => clearTimeout(timer);
-  }, [url]);
-
+    fetch(`${url}/api/NewsLine/active/true`)
+      .then((response) => response.json())
+      .then((json) => {
+        // Sort the data by converting the createdAt field to timestamps and then subtracting
+        const sortedData = json.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        console.log(sortedData);
+        
+        setData(sortedData);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  }, []);
+  const toggleActive = () => {
+    setLoading(true);
+    fetch(`${url}/api/NewsLine`)
+      .then((response) => response.json())
+      .then((json) => {
+        // Sort and filter data where active is a known boolean (true or false)
+        const sortedAndFilteredData = json
+          .filter(item => item.active !== undefined) // Ensure there is an active flag
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setData(sortedAndFilteredData);
+        console.log(sortedAndFilteredData);
+        
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  };
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -87,6 +101,7 @@ const User: React.FC = () => {
       ? title.substring(0, maxLength) + "..."
       : title;
   };
+
   useEffect(() => {
     let userName;
     let lang;
@@ -111,6 +126,7 @@ const User: React.FC = () => {
       setShowAdminButton(false);
     }
   }, [location.search]);
+
   const handleAdminNavigate = () => {
     let userName;
     let lang;
@@ -129,7 +145,6 @@ const User: React.FC = () => {
       setLanguage(lang);
       setShowAdminButton(true);
     } else {
-      setIsModalOpen(true);
       setShowAdminButton(false);
     }
   };
@@ -159,6 +174,15 @@ const User: React.FC = () => {
     setOnMoreModalClick(false);
   };
 
+  const options: SplideOptions = {
+    type: "loop",
+    direction: "ttb",
+    height: "100%",
+    perPage: 3,
+    autoplay: true,
+    interval: 3000,
+    pauseOnHover: true,
+  };
   return (
     <Layout style={{ minHeight: "100vh", background: "unset" }}>
       <Header
@@ -180,17 +204,19 @@ const User: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            width:'100%'
           }}
         >
-          <h3
+          <Button
             style={{
               fontFamily: "sans-serif",
               color: "#b70043",
               margin: "0 30px",
             }}
+            onClick={toggleActive}
           >
             {translations[language]}
-          </h3>
+          </Button>
           <Button
             style={{
               marginRight: "25px",
@@ -229,32 +255,30 @@ const User: React.FC = () => {
           span={24}
           style={{
             position: "relative",
-            paddingTop: "90px",
+            paddingTop: "65px",
             display: "flex",
             flexDirection: "column",
             gap: "10px",
           }}
         >
-          <SplideReact
-            options={{
-              direction: "ttb",
-              height: "100%",
-              heightRatio: 2,
-            }}
-          >
+          <Splide options={options} extensions={{ AutoScroll }}>
             {!loading &&
               data.length > 0 &&
               data.map((item: DataType) => (
                 <SplideSlide key={item.id}>
                   <Card
+                    key={`card-${item.id}-${item.active}`}
+                    className={`cards card-animation ${item.active ? 'active-card' : 'inactive-card'}`}
                     style={{
-                      background: "#F5F5F5",
+                      // background: `${item.active ? 'rgba(220, 255, 226, 0,2) ' : 'rgba(255, 199, 199, 0,2)'} !important`,
+                      background: `${item.active ? 'rgba(220, 255, 226, 0.2)' : 'rgba(255, 199, 199, 0.2)'} !important`,
+
                       position: "relative",
                       padding: "0px !important",
+                      marginBottom:'10px'
                     }}
                     title={truncateTitle(item.title, 30)}
                     bordered={false}
-                    className="cards card-animation"
                   >
                     <span>{truncateDescription(item.description, 200)}</span>
                     <div
@@ -290,7 +314,7 @@ const User: React.FC = () => {
                   </Card>
                 </SplideSlide>
               ))}
-          </SplideReact>
+          </Splide>
         </Col>
       </Content>
     </Layout>

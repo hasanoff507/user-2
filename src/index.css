@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: red;
+  /* background: red; */
 
 
 }
@@ -73,11 +73,21 @@ padding-bottom: 0;
 
 
 .card-animation {
-  animation: slideUp 0.5s ease-out forwards;
-  background: rgba(255, 255, 255, 0.5) !important;
+  /* animation: slideUp 0.5s ease-out forwards; */
+  /* background: rgba(255, 255, 255, 0.5) !important; */
   backdrop-filter: blur(3px);
 
 }
 .ant-modal-mask {
   background-color: rgba(0, 0, 0, 0.2) !important;
+}
+.splide__arrow {
+  display: none !important;
+}
+.active-card {
+  background: rgba(220, 255, 226, 0.2) !important;
+}
+
+.inactive-card {
+  background: rgba(255, 199, 199, 0.2) !important;
 }

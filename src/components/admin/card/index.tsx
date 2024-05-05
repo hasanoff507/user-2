@@ -12,6 +12,7 @@ import ModalMore from "../modalMore";
 import ModalInactive from "../modalinactive";
 import ModalPut from "../modalPut";
 import ModalDelete from "../modalDelete";
+import url from "../../../url";
 
 interface DataType {
   id: number;
@@ -30,7 +31,6 @@ type Props = {
 };
 
 const CardItem: React.FC<Props> = ({ cardData,fetchData, isActive,}) => {
-  const url = "http://10.0.53.146:9027";
   const [moreData, setMoreData] = useState<DataType[] >([]);
   const [onMoreModalClick, setOnMoreModalClick] = useState(false);
   const [putModalOpen, setPutModalOpen] = useState(false)

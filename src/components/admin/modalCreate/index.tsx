@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Form, Input, Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import url from "../../../url";
 
 type Props = {
   isModalOpen: boolean;
@@ -21,7 +22,6 @@ const ModalCreate: React.FC<Props> = ({
   setIsModalOpen
   
 }) => {
-  const url = "http://10.0.53.146:9027";
   const [form] = Form.useForm();
 
 

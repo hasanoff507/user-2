@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal,Button} from "antd";
+import url from "../../../url";
 
 
 type Props = {
@@ -13,7 +14,6 @@ type Props = {
 
 const ModalDelete: React.FC<Props> = ({onDeleteModalClose,deleteModalOpen,deleteId,fetchData,setDeleteModalOpen
 }) => {
-    const url = "http://10.0.53.146:9027";
 
     function deleteData() {
         const itemUrl = `${url}/api/NewsLine/${deleteId}`;

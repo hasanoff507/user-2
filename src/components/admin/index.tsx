@@ -10,6 +10,7 @@ import { Button, Layout, Menu, theme, Modal } from "antd";
 import CardItem from "./card";
 import ModalCreate from "./modalCreate";
 import { useNavigate } from "react-router-dom";
+import url from "../../url";
 const { Header, Sider, Content } = Layout;
 interface DataType {
     id: number,
@@ -20,7 +21,7 @@ interface DataType {
     active: boolean
 }
 const Admin: React.FC = () => {
-  const url = "http://10.0.53.146:9027";
+
   const [collapsed, setCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cardData, setCardData] = useState<DataType[]>([]);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
+import url from "../../../url";
 
 type Props = {
   putActive: boolean;
@@ -18,7 +19,6 @@ const ModalInactive: React.FC<Props> = ({
   isActive,
   fetchData,
 }) => {
-  const url = "http://10.0.53.146:9027";
 
   const onInactiveCkickClose = () => {
     setPutActive(false);
