@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  EyeOutlined,
-  PlusCircleOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Layout, Button, Row, Col, Card, Modal, Spin } from "antd";
+import { EyeOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Layout, Button, Col, Card, Spin, Badge } from "antd";
 import { useLocation } from "react-router-dom";
 import { AutoScroll } from "@splidejs/splide-extension-auto-scroll";
 import ModalMoreUser from "./modalMoreUser";
@@ -29,6 +25,17 @@ interface IValidate {
 interface Translations {
   [key: string]: string;
 }
+interface TranslationsBadge {
+  active: {
+    uz: string;
+    ru: string;
+  };
+  inactive: {
+    uz: string;
+    ru: string;
+  };
+}
+
 const admins = ["grci1", "grci2", "matrixbi"];
 
 const User: React.FC = () => {
@@ -40,41 +47,74 @@ const User: React.FC = () => {
   const [showAdminButton, setShowAdminButton] = useState(true);
   const [isActiveToggled, setIsActiveToggled] = useState(false);
   const [language, setLanguage] = useState("uz");
+  const [shouldFetch, setShouldFetch] = useState(true);
+  
+
+
+  
   const translations: Translations = {
-    uz: "Е'лонлар",
+    uz: "E'lonlar",
     ru: "Объявления",
   };
+  const translationsBadge: TranslationsBadge = {
+    active: {
+      uz: "Faol",
+      ru: "Активный",
+    },
+    inactive: {
+      uz: "Faol emas",
+      ru: "Не активный",
+    },
+  };
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(`${url}/api/NewsLine/active/true`)
-      .then((response) => response.json())
-      .then((json) => {
-        // Sort the data by converting the createdAt field to timestamps and then subtracting
-        const sortedData = json.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        console.log(sortedData);
-        
-        setData(sortedData);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
-  }, []);
+
+const fetchData = ()=>{
+   
+  setLoading(true);
+  fetch(`${url}/api/NewsLine/active/true`)
+    .then((response) => response.json())
+    .then((json) => {
+      const sortedData = json.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      const needsDuplication = json.length <= 2;
+      const duplicatedData = needsDuplication ? [...sortedData] : sortedData;
+      setData(duplicatedData);
+      setLoading(false);
+      setShouldFetch(false); 
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    });
+}
+   
+useEffect(()=>{
+  fetchData()
+},[])
+
+
   const toggleActive = () => {
-    setIsActiveToggled(!isActiveToggled); 
+    setIsActiveToggled(!isActiveToggled);
     setLoading(true);
-    fetch(`${url}/api/NewsLine`)
+    const fetchUrl = isActiveToggled
+      ? `${url}/api/NewsLine/active/true`
+      : `${url}/api/NewsLine`;
+    fetch(fetchUrl)
       .then((response) => response.json())
       .then((json) => {
-        // Sort and filter data where active is a known boolean (true or false)
-        const sortedAndFilteredData = json
-          .filter(item => item.active !== undefined) // Ensure there is an active flag
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setData(sortedAndFilteredData);
-        console.log(sortedAndFilteredData);
-        
+        const sortedData = json
+          .filter((item) => item.active !== undefined) // Ensure there is an active flag
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+        setData(sortedData);
+        console.log(sortedData);
+
         setLoading(false);
       })
       .catch((error) => {
@@ -180,17 +220,24 @@ const User: React.FC = () => {
     type: "loop",
     direction: "ttb",
     height: "100%",
-    perPage: 3,
-    autoplay: true,
-    interval: 3000,
+    perPage: 5,
+    arrows: false,
+    autoStart: true,
+    wheel: false,
+    waitForTransition: false,
+    autoplay: data.length > 2,
+    autoScroll: data.length > 2 ? { speed: 1 } : undefined,
+
     pauseOnHover: true,
   };
+  const splideKey = data.length;
+
   return (
     <Layout style={{ minHeight: "100vh", background: "unset" }}>
       <Header
         style={{
           padding: 0,
-          background: "rgba(255, 255, 255, 0.5)",
+          background: "unset",
           backdropFilter: "blur(3px)",
           display: "flex",
           justifyContent: "space-between",
@@ -206,14 +253,21 @@ const User: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width:'100%'
+            width: "100%",
           }}
         >
           <Button
             style={{
               fontFamily: "sans-serif",
               color: "#b70043",
-              margin: "0 30px",
+              margin: "0 10px",
+              fontSize: "18px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              border: "unset",
+              background: "rgba(255, 255, 255, 0.2)",
+              backdropFilter: "blur(2px)",
             }}
             onClick={toggleActive}
           >
@@ -221,7 +275,7 @@ const User: React.FC = () => {
           </Button>
           <Button
             style={{
-              marginRight: "25px",
+              marginRight: "10px",
               border: "none",
               display: showAdminButton ? "block" : "none",
               background: "rgba(255, 255, 255, 0.2)",
@@ -263,58 +317,102 @@ const User: React.FC = () => {
             gap: "10px",
           }}
         >
-          <Splide options={options} extensions={{ AutoScroll }}>
+          <Splide
+            options={options}
+            extensions={data.length > 2 ? { AutoScroll } : {}}
+            key={splideKey}
+          >
             {!loading &&
               data.length > 0 &&
-              data.map((item: DataType) => (
-                <SplideSlide key={item.id}>
-                  <Card
-                    key={`card-${item.id}-${item.active}`}
-                    className={`cards card-animation ${isActiveToggled ? (item.active ? 'active-card' : 'inactive-card') : ''}`}
-
+              data.map((item: DataType, index: number) => {
+                const lastItem = index === data.length - 1;
+                return (
+                  <SplideSlide
                     style={{
-                      position: "relative",
-                      padding: "0px !important",
-                      marginBottom:'10px',
-                      background:'rgba(255, 255, 255, 0.5)'
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "none !important",
+                      marginTop: "400px !important",
                     }}
-                    title={truncateTitle(item.title, 30)}
-                    bordered={false}
+                    key={item.id}
                   >
-                    <span>{truncateDescription(item.description, 200)}</span>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "end",
-                        marginTop: "-5px",
-                      }}
+                    <Badge.Ribbon
+                      style={{ display: isActiveToggled ? "block" : "none" }}
+                      text={`${
+                        isActiveToggled
+                          ? item.active
+                            ? `${translationsBadge.active[language]}`
+                            : `${translationsBadge.inactive[language]}`
+                          : ""
+                      }`}
+                      color={`${
+                        isActiveToggled ? (item.active ? "green" : "red") : ""
+                      }`}
                     >
-                      <div>
-                        <span style={{ fontSize: "10px", color: "#a39797" }}>
-                          {formatDate(item.createdAt)}
-                        </span>
-                      </div>
-                      <Button
-                        onClick={() => onMoreClick(item.id)}
-                        icon={<EyeOutlined style={{ color: "a39797" }} />}
+                      <Card
+                        key={`card-${item.id}-${item.active}`}
+                        className="card__padding"
                         style={{
-                          background: "transparent",
-                          border: "none",
-                          width: "20px",
-                          height: "20px",
+                          position: "relative",
+                          padding: "0px !important",
+                          width: "100%",
+                          background: "rgba(255, 255, 255, 0.5)",
+                          height: "200px",
+                          marginBottom: lastItem ? "450px" : "10px",
                         }}
-                      />
-                    </div>
+                        title={truncateTitle(item.title, 30)}
+                        bordered={false}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            flexDirection: "column",
+                            height: "100%",
+                          }}
+                        >
+                          <div>
+                            <span>
+                              {truncateDescription(item.description, 200)}{" "}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "end",
+                            }}
+                          >
+                            <div>
+                              <span
+                                style={{ fontSize: "10px", color: "#a39797" }}
+                              >
+                                {formatDate(item.createdAt)}
+                              </span>
+                            </div>
+                            <Button
+                              onClick={() => onMoreClick(item.id)}
+                              icon={<EyeOutlined style={{ color: "a39797" }} />}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                width: "20px",
+                                height: "20px",
+                              }}
+                            />
+                          </div>
+                        </div>
 
-                    <ModalMoreUser
-                      onMoreModalClick={onMoreModalClick}
-                      onMoreModalClose={onMoreModalClose}
-                      moreData={moreData}
-                    />
-                  </Card>
-                </SplideSlide>
-              ))}
+                        <ModalMoreUser
+                          onMoreModalClick={onMoreModalClick}
+                          onMoreModalClose={onMoreModalClose}
+                          moreData={moreData}
+                        />
+                      </Card>
+                    </Badge.Ribbon>
+                  </SplideSlide>
+                );
+              })}
           </Splide>
         </Col>
       </Content>

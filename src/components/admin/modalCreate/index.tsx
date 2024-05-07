@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, Form, Input, Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import url from "../../../url";
+import { json } from "stream/consumers";
 
 type Props = {
   isModalOpen: boolean;
@@ -19,8 +20,7 @@ const ModalCreate: React.FC<Props> = ({
   handleCancel,
   fetchData,
   onModalFeild,
-  setIsModalOpen
-  
+  setIsModalOpen,
 }) => {
   const [form] = Form.useForm();
 
@@ -40,10 +40,10 @@ const ModalCreate: React.FC<Props> = ({
       },
     })
       .then((response) => response.json())
-      .then(() => {
+      .then((json) => {
         setIsModalOpen(false);
         form.resetFields();
-        fetchData(); 
+        fetchData();  
       })
       .catch((error) => console.error("Failed to create news:", error));
   }

@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background: red; */
+  background: red;
 
 
 }
@@ -35,11 +35,10 @@ html, body, #root {
   justify-content: end;
   gap: 10px;
 }
-.ant-row{
-  margin-bottom: 10px;
-}
+
 .ant-card-body{
   position: relative;
+  height: 79%;
 }
 .cards .ant-card-body{
 padding-left: 5px;
@@ -54,10 +53,6 @@ padding-bottom: 0;
 }
 
 
-.ticker:hover {
-  animation-play-state: paused; /* Pause animation on hover */
-}
-
 
 
 
@@ -68,13 +63,22 @@ padding-bottom: 0;
 .ant-modal-mask {
   background-color: rgba(0, 0, 0, 0.2) !important;
 }
-.splide__arrow {
-  display: none !important;
-}
+
 .active-card {
   background: rgba(220, 255, 226, 0.2) !important;
 }
 
 .inactive-card {
   background: rgba(255, 199, 199, 0.2) !important;
+}
+.card__padding .ant-card-body{
+  padding: 10px !important;
+  height: 76% !important;
+}
+.card__padding .ant-card-head{
+  padding: 0 10px !important;
+}
+.ant-ribbon-placement-end {
+  inset-inline-end: 5px !important;
+  border-end-end-radius: 0;
 }

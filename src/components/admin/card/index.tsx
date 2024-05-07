@@ -4,7 +4,6 @@ import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
-  MoreOutlined,
   VerticalAlignBottomOutlined,
   VerticalAlignTopOutlined,
 } from "@ant-design/icons";
@@ -28,9 +27,10 @@ type Props = {
   fetchData: () => void
   isActive:boolean
 
+
 };
 
-const CardItem: React.FC<Props> = ({ cardData,fetchData, isActive,}) => {
+const CardItem: React.FC<Props> = ({ cardData,fetchData, isActive}) => {
   const [moreData, setMoreData] = useState<DataType[] >([]);
   const [onMoreModalClick, setOnMoreModalClick] = useState(false);
   const [putModalOpen, setPutModalOpen] = useState(false)
@@ -96,24 +96,25 @@ const putClick = (id:number)=>{
         <Row key={item.id} gutter={24} style={{ position: "relative" }}>
           <Col span={24} style={{ position: "relative" }}>
             <Card
-              style={{ background: "#F5F5F5 ", position: "relative" }}
+              style={{ background: "#F5F5F5 ", position: "relative",marginBottom:'10px' }}
               title={item.title}
               bordered={false}
             >
               <span>{truncateDescription(item.description, 200)}</span>
 
-              <div>
-                {isActive ? <span style={{position:'absolute', top:'65px', fontSize:'10px'}}>{formatDate(item.createdAt)}</span> : <span style={{position:'absolute', top:'65px'}}>{formatDate(item.updatedAt)}</span>}
-              </div>
+              
               <div
                 style={{
                   display: "flex",
                   alignItems: "end",
-                  justifyContent: "end",
+                  justifyContent: "space-between",
                   gap: "10px",
                 }}
               >
-           
+           <div>
+                {isActive ? <span style={{ fontSize:'10px'}}>{formatDate(item.createdAt)}</span> : <span style={{position:'absolute', top:'65px'}}>{formatDate(item.updatedAt)}</span>}
+              </div>
+              <div style={{display:'flex', gap:'10px'}}>
                   {isActive ?  <Button onClick={()=>onInactiveCkick(item.id)}
                   icon={<VerticalAlignBottomOutlined style={{ color: "#2869FF" }} />}
                 />:  <Button onClick={() => onActiveClick(item.id)}
@@ -127,6 +128,7 @@ const putClick = (id:number)=>{
                    onClick={() => onMoreClick(item.id)}
                   icon={<EyeOutlined  />}
                 />
+                </div>
                  <ModalMore
         key={item.id} 
         onMoreModalClick={onMoreModalClick}

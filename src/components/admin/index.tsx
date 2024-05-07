@@ -6,28 +6,28 @@ import {
   PlusOutlined,
   LeftCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme, Modal } from "antd";
+import { Button, Layout, Menu, theme } from "antd";
 import CardItem from "./card";
 import ModalCreate from "./modalCreate";
 import { useNavigate } from "react-router-dom";
 import url from "../../url";
 const { Header, Sider, Content } = Layout;
 interface DataType {
-    id: number,
-    title: string,
-    description: string
-    createdAt: string,
-    updatedAt: boolean,
-    active: boolean
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: boolean;
+  active: boolean;
 }
-const Admin: React.FC = () => {
 
+const Admin: React.FC = ( ) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cardData, setCardData] = useState<DataType[]>([]);
   const [isActive, setIsActive] = useState(true);
 
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -37,10 +37,12 @@ const navigate = useNavigate()
   }, [isActive]); // Dependency on isActive to re-fetch when it changes
 
   const fetchData = () => {
-
     fetch(`${url}/api/NewsLine/active/${isActive}`)
       .then((response) => response.json())
-      .then((data) => setCardData(data))
+      .then((data) => {
+        setCardData(data);
+        
+      })
       .catch((error) => console.error("Error fetching data:", error));
   };
 
@@ -50,16 +52,12 @@ const navigate = useNavigate()
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    
   };
-  
 
-
-
-  const backClick = ()=>{
-    navigate('/')
-  }
-  const handleMenuClick = (e:any) => {
+  const backClick = () => {
+    navigate("/");
+  };
+  const handleMenuClick = (e: any) => {
     setIsActive(e.key === "1");
   };
 
@@ -71,7 +69,7 @@ const navigate = useNavigate()
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
-          style={{ background: "#ffffff", position:'relative' }}
+          style={{ background: "#ffffff", position: "relative" }}
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={[
@@ -89,8 +87,17 @@ const navigate = useNavigate()
           onClick={handleMenuClick}
         />
         <div>
-
-        <Button onClick={backClick} style={{position:'absolute', bottom:'10px', left:'10px', border:'none', background:'transparent'}} icon={<LeftCircleOutlined style={{fontSize:'20px'}}/>}/>
+          <Button
+            onClick={backClick}
+            style={{
+              position: "absolute",
+              bottom: "10px",
+              left: "10px",
+              border: "none",
+              background: "transparent",
+            }}
+            icon={<LeftCircleOutlined style={{ fontSize: "20px" }} />}
+          />
         </div>
       </Sider>
       <Layout>
@@ -129,14 +136,19 @@ const navigate = useNavigate()
             margin: "24px 16px",
             padding: 24,
             minHeight: 100,
-            maxHeight:"841px",
-            overflow:"auto",
+            maxHeight: "841px",
+            overflow: "auto",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
         >
           {cardData.length > 0 ? (
-            <CardItem fetchData={fetchData} cardData={cardData} isActive={isActive} />) : (
+            <CardItem
+              fetchData={fetchData}
+              cardData={cardData}
+              isActive={isActive}
+            />
+          ) : (
             <div>
               {isActive
                 ? "No active content available."

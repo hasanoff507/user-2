@@ -9,7 +9,7 @@ type Props = {
     deleteId:number
     fetchData: () => void
     setDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-
+    
 };
 
 const ModalDelete: React.FC<Props> = ({onDeleteModalClose,deleteModalOpen,deleteId,fetchData,setDeleteModalOpen
